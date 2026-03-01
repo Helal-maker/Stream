@@ -9,15 +9,12 @@ const nextConfig = {
     "localhost:3000"
   ],
 
-  experimental: {
-    serverActions: {
-      allowedOrigins: [
-        "localhost:3000",
-        "fuzzy-fishstick-q7999v5rxx74269q6-3000.app.github.dev",
-        "*.app.github.dev",
-      ],
-      bodySizeLimit: "2MB"
-    },
+  serverActions: {
+    allowedOrigins: [
+      "localhost:3000",
+      "fuzzy-fishstick-q7999v5rxx74269q6-3000.app.github.dev",
+      "*.app.github.dev",
+    ],
   },
 
   images: {

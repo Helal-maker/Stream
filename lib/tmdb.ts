@@ -1161,21 +1161,27 @@ export function getVidSrcUrl(
 }
 
 // Fetch all movies for a specific year across multiple pages
+// Uses Promise.all for parallel fetching (much faster than sequential)
 export async function getAllMoviesByYear(year: number, maxPages: number = 5): Promise<Movie[]> {
 	try {
-		const allMovies: Movie[] = [];
-		for (let page = 1; page <= maxPages; page++) {
-			const response = await fetchWithRetry(
-				`${API_BASE_URL}/discover/movie?api_key=${API_KEY}&language=en-US&sort_by=popularity.desc&primary_release_year=${year}&page=${page}`,
-				{ next: { revalidate: 3600 } }
-			);
-			const data = await response.json();
-			if (data.results && data.results.length > 0) {
-				allMovies.push(...data.results);
-			} else {
-				break; // No more results
+		// Fetch all pages in parallel
+		const pagePromises = Array.from({ length: maxPages }, async (_, i) => {
+			const page = i + 1;
+			try {
+				const response = await fetchWithRetry(
+					`${API_BASE_URL}/discover/movie?api_key=${API_KEY}&language=en-US&sort_by=popularity.desc&primary_release_year=${year}&page=${page}`,
+					{ next: { revalidate: 3600 } }
+				);
+				const data = await response.json();
+				return data.results || [];
+			} catch (error) {
+				console.error(`Error fetching movies for year ${year}, page ${page}:`, error);
+				return [];
 			}
-		}
+		});
+
+		const results = await Promise.all(pagePromises);
+		const allMovies = results.flat();
 		return allMovies;
 	} catch (error) {
 		console.error(`Error fetching all movies for year ${year}:`, error);

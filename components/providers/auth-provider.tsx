@@ -23,6 +23,7 @@ interface AuthContextType {
   session: Session | null;
   activeUserProfile: UserProfile | null;
   loading: boolean;
+  mounted: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signUp: (email: string, password: string) => Promise<{ error: Error | null; needsConfirmation: boolean }>;
   signOut: () => Promise<void>;
@@ -47,6 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [activeUserProfile, setActiveUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   // Memoize the Supabase client to prevent recreation on every render
   const supabase = useMemo(
@@ -57,6 +59,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       ),
     []
   );
+
+  // Set mounted state after hydration
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Initialize auth state
   useEffect(() => {
@@ -190,6 +197,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     session,
     activeUserProfile,
     loading,
+    mounted,
     signIn,
     signUp,
     signOut,
@@ -199,9 +207,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
+    <div suppressHydrationWarning>
+      <AuthContext.Provider value={value}>
+        {children}
+      </AuthContext.Provider>
+    </div>
   );
 }
 

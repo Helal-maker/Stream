@@ -183,6 +183,9 @@ importers:
       '@types/video.js':
         specifier: ^7.3.58
         version: 7.3.58
+      detect-libc:
+        specifier: ^2.1.2
+        version: 2.1.2
       postcss:
         specifier: ^8.5
         version: 8.5.6

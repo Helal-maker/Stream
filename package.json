@@ -69,6 +69,7 @@
 		"@types/react": "^19",
 		"@types/react-dom": "^19",
 		"@types/video.js": "^7.3.58",
+		"detect-libc": "^2.1.2",
 		"postcss": "^8.5",
 		"tailwindcss": "^4.1.9",
 		"tw-animate-css": "1.3.3",

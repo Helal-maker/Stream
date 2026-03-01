@@ -94,22 +94,13 @@ export function HeroSection({ movies }: HeroSectionProps) {
 						return (
 							<CarouselItem key={movie.id}>
 								<div 
-									className="relative w-full h-[500px] md:h-[600px] overflow-hidden transition-all duration-700"
-									onMouseMove={(e) => {
-										const rect = e.currentTarget.getBoundingClientRect();
-										const x = ((e.clientX - rect.left) / rect.width - 0.5) * 12;
-										const y = ((e.clientY - rect.top) / rect.height - 0.5) * 8;
-										e.currentTarget.style.transform = `perspective(1200px) rotateX(${-y}deg) rotateY(${x}deg) scale3d(1.05, 1.05, 1.05)`;
-									}}
-									onMouseLeave={(e) => {
-										e.currentTarget.style.transform = "perspective(1200px) rotateX(0) rotateY(0) scale3d(1, 1, 1)";
-									}}
+									className="relative w-full h-[500px] md:h-[600px] overflow-hidden transition-transform duration-300 hover:scale-[1.02]"
 								>
 									<Link href={`/movie/${movie.id}`} className="absolute inset-0 z-10 block">
 										<span className="sr-only">Watch {movie.title}</span>
 									</Link>
-									{/* Background Image with 3D effect */}
-									<div className="absolute inset-0 transform-style-preserve-3d">
+									{/* Background Image */}
+									<div className="absolute inset-0">
 										<Image
 											src={
 												getBackdropUrl(movie.backdrop_path) ||
@@ -117,17 +108,17 @@ export function HeroSection({ movies }: HeroSectionProps) {
 											}
 											alt={movie.title}
 											fill
-											className="object-cover transform translateZ(-50px) scale(1.1)"
+											className="object-cover"
 											priority
 											sizes="100vw"
 										/>
 									</div>
 
-									{/* 3D Gradient Overlay */}
-									<div className="absolute inset-0 bg-gradient-to-r from-background via-background/60 to-transparent transform translateZ(20px)" />
+									{/* Gradient Overlay */}
+									<div className="absolute inset-0 bg-gradient-to-r from-background via-background/60 to-transparent" />
 
-									{/* 3D Content Layer */}
-									<div className="absolute inset-0 flex items-center px-4 sm:px-8 transform translateZ(50px)">
+									{/* Content Layer */}
+									<div className="absolute inset-0 flex items-center px-4 sm:px-8">
 										<div className="max-w-2xl space-y-6">
 											<div>
 												{/* Logo or Title */}

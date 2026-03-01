@@ -182,7 +182,7 @@ export function FeaturedMovieCard({
 							alt={title}
 							fill
 							priority={priority}
-							className="object-cover transition-all duration-500 ease-in-out group-hover:scale-110"
+							className="object-cover transition-transform duration-300 ease-out hover:scale-105"
 							sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
 						/>
 

@@ -29,7 +29,7 @@ export function Navbar() {
 	const [isSearchOpen, setIsSearchOpen] = useState(false);
 	const [trendingMovies, setTrendingMovies] = useState<Movie[]>([]);
 	const router = useRouter();
-	const { user, loading } = useAuth();
+	const { user, loading, mounted } = useAuth();
 
 	// Pre-fetch trending/popular movies for instant search load
 	useEffect(() => {
@@ -116,12 +116,12 @@ export function Navbar() {
 						</button>
 
 						{/* User Menu - Show for logged in users */}
-						{!loading && user && (
+						{mounted && !loading && user && (
 							<UserMenu />
 						)}
 
 						{/* Login Button - Show for non-logged in users */}
-						{!loading && !user && (
+						{mounted && !loading && !user && (
 							<Link href="/login">
 								<Button
 									variant="ghost"

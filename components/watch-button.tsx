@@ -28,9 +28,7 @@ export function WatchButton({
     showWatchlist = true 
 }: WatchButtonProps) {
     const router = useRouter();
-    const [isLoading, setIsLoading] = useState(false);
     const [probingResults, setProbingResults] = useState<CachedProbingResults | null>(null);
-    const [isCheckingCache, setIsCheckingCache] = useState(true);
 
     const { 
         isSaved, 
@@ -40,24 +38,32 @@ export function WatchButton({
         loading: watchlistLoading 
     } = useWatchlist();
 
-    // Check for cached probing results on mount
+    const watchPath = `/watch/${mediaType}/${movieId}`;
+
+    // Prefetch on mount for instant navigation
+    useEffect(() => {
+        router.prefetch(watchPath);
+    }, [movieId, router]);
+
+    // Check for cached probing results on mount (non-blocking)
     useEffect(() => {
         const cached = getCachedProbingResults(movieId);
         if (cached) {
             setProbingResults(cached);
         }
-        setIsCheckingCache(false);
     }, [movieId]);
 
+    // Prefetch on hover for lazy loading
+    const handleMouseEnter = () => {
+        router.prefetch(watchPath);
+    };
+
     const handleWatchClick = (e: React.MouseEvent) => {
-        // Prefetch the watch page for smoother transition
-        router.prefetch(`/watch/${mediaType}/${movieId}`);
-        
         // If we have a preloaded provider, we could pass it via query params
         if (probingResults?.fastestProvider) {
             router.push(`/watch/${mediaType}/${movieId}?provider=${probingResults.fastestProvider.providerId}`);
         } else {
-            router.push(`/watch/${mediaType}/${movieId}`);
+            router.push(watchPath);
         }
     };
 
@@ -72,7 +78,7 @@ export function WatchButton({
         await toggleSave({
             id: movieId,
             title,
-            poster_path: posterPath,
+            poster_path: posterPath ?? null,
             mediaType,
         });
     };
@@ -84,46 +90,26 @@ export function WatchButton({
     return (
         <div className="flex flex-wrap items-center gap-4">
             <div className="flex flex-col gap-1">
-                <Link
-                    href={`/watch/${mediaType}/${movieId}${fastestProvider ? `?provider=${fastestProvider.providerId}` : ''}`}
-                    onClick={(e) => {
-                        // Start prefetching immediately
-                        router.prefetch(`/watch/${mediaType}/${movieId}`);
-                        
-                        if (fastestProvider) {
-                            // Use fastest provider URL
-                            e.preventDefault();
-                            router.push(`/watch/${mediaType}/${movieId}?provider=${fastestProvider.providerId}`);
-                        }
-                    }}
+                <button
+                    onMouseEnter={handleMouseEnter}
+                    onClick={handleWatchClick}
                     className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white font-semibold rounded-full hover:bg-primary/90 transition-all hover:scale-105 shadow-lg shadow-primary/30"
                 >
-                    {isCheckingCache ? (
-                        <Loader2 size={20} className="animate-spin" />
-                    ) : fastestProvider ? (
+                    {fastestProvider ? (
                         <Zap size={20} className="text-yellow-400" />
                     ) : (
                         <PlayCircle size={20} />
                     )}
-                    {isCheckingCache ? "Preparing..." : fastestProvider ? "Play Instantly" : "Watch Now"}
-                </Link>
+                    {fastestProvider ? "Play Instantly" : "Watch Now"}
+                </button>
                 
-                {/* Preloading Status Indicator */}
-                {!isCheckingCache && (
+                {/* Preloading Status Indicator - show immediately without spinner */}
+                {fastestProvider && (
                     <div className="flex items-center gap-1.5 text-xs text-muted-foreground px-2">
-                        {fastestProvider ? (
-                            <>
-                                <Zap className="w-3 h-3 text-green-500" />
-                                <span className="text-green-500">
-                                    Ready • {fastestProvider.providerName} ({fastestProvider.responseTime}ms)
-                                </span>
-                            </>
-                        ) : (
-                            <>
-                                <CheckCircle2 className="w-3 h-3" />
-                                <span>Ready to play</span>
-                            </>
-                        )}
+                        <Zap className="w-3 h-3 text-green-500" />
+                        <span className="text-green-500">
+                            Ready • {fastestProvider.providerName} ({fastestProvider.responseTime}ms)
+                        </span>
                     </div>
                 )}
             </div>
