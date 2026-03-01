@@ -1,29 +1,40 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-	// Allow cross-origin requests from local network devices (Section 7)
-	allowedDevOrigins: [
-		"http://localhost:3000",
-		"http://127.0.0.1:3000",
-		"http://192.168.0.109:3000",
-	],
+  allowedDevOrigins: [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://192.168.0.109:3000",
+    "https://fuzzy-fishstick-q7999v5rxx74269q6-3000.app.github.dev",
+    "*.app.github.dev",
+    "localhost:3000"
+  ],
 
-	// Image optimization
-	images: {
-		remotePatterns: [
-			{
-				protocol: "https",
-				hostname: "image.tmdb.org",
-				pathname: "/t/p/**",
-			},
-		],
-	},
+  experimental: {
+    serverActions: {
+      allowedOrigins: [
+        "localhost:3000",
+        "fuzzy-fishstick-q7999v5rxx74269q6-3000.app.github.dev",
+        "*.app.github.dev",
+      ],
+      bodySizeLimit: "2MB"
+    },
+  },
 
-	// Enable React strict mode for better development error detection
-	reactStrictMode: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "image.tmdb.org",
+        pathname: "/t/p/**",
+      },
+    ],
+  },
 
-	typescript: {
-		ignoreBuildErrors: true,
-	},
+  reactStrictMode: true,
+
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 };
 
 export default nextConfig;
